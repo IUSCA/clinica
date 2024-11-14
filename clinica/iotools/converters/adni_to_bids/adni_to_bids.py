@@ -153,10 +153,10 @@ class AdniToBids(Converter):
         )
 
         # -- Creation of sessions.tsv --
-        cprint("Creating sessions files...")
-        adni_utils.create_adni_sessions_dict(
-            bids_ids, clinic_specs_path, clinical_data_dir, bids_subjs_paths
-        )
+        # cprint("Creating sessions files...")
+        # adni_utils.create_adni_sessions_dict(
+        #     bids_ids, clinic_specs_path, clinical_data_dir, bids_subjs_paths
+        # )
 
         # -- Creation of scans files --
         if conversion_path.exists():
