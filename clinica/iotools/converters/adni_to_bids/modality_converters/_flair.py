@@ -56,6 +56,7 @@ def convert_flair(
         f"Calculating paths of {ADNIModalityConverter.FLAIR} images. Output will be stored in {conversion_dir}.",
         lvl="info",
     )
+
     images = _compute_flair_paths(source_dir, csv_dir, subjects, conversion_dir)
     cprint(
         f"Paths of {ADNIModalityConverter.FLAIR} images found. Exporting images into BIDS ...",
@@ -141,19 +142,25 @@ def _compute_flair_paths(
             if flair is not None:
                 row_to_append = pd.DataFrame(flair, index=["i"])
                 flair_dfs_list.append(row_to_append)
+
     if flair_dfs_list:
         flair_df = pd.concat(flair_dfs_list, ignore_index=True)
+    from clinica.utils.stream import cprint
 
+    cprint(
+        f"{flair_df}",
+        lvl="info",
+    )
     # Removing known exceptions from images to convert
-    if not flair_df.empty:
-        error_ind = flair_df.index[
-            flair_df.apply(
-                lambda x: ((x.Subject_ID, x.VISCODE) in _get_known_conversion_errors()),
-                axis=1,
-            )
-        ]
-        flair_df.drop(error_ind, inplace=True)
-
+    # if not flair_df.empty:
+    #     error_ind = flair_df.index[
+    #         flair_df.apply(
+    #             lambda x: ((x.Subject_ID, x.VISCODE) in _get_known_conversion_errors()),
+    #             axis=1,
+    #         )
+    #     ]
+    #     flair_df.drop(error_ind, inplace=True)
+    
     # Checking for images paths in filesystem
     images = find_image_path(flair_df, source_dir, "FLAIR")
     images.to_csv(conversion_dir / "flair_paths.tsv", sep="\t", index=False)
@@ -162,20 +169,19 @@ def _compute_flair_paths(
 
 
 def _initialize_flair_df() -> pd.DataFrame:
-    return pd.DataFrame(
-        [
-            "Subject_ID",
-            "VISCODE",
-            "Visit",
-            "Sequence",
-            "Scan_Date",
-            "Study_ID",
-            "Series_ID",
-            "Image_ID",
-            "Field_Strength",
-            "Scanner",
-        ]
-    )
+    # Initialize an empty DataFrame with proper column names
+    return pd.DataFrame(columns=[
+        "Subject_ID",
+        "VISCODE",
+        "Visit",
+        "Sequence",
+        "Scan_Date",
+        "Study_ID",
+        "Series_ID",
+        "Image_ID",
+        "Field_Strength",
+        "Scanner",
+    ])
 
 
 def _get_known_conversion_errors() -> Iterable[tuple[str, str]]:

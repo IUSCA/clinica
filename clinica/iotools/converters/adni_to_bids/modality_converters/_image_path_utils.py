@@ -24,9 +24,12 @@ def find_image_path(
 
     Returns: Dataframe containing metadata and existing paths
     """
+
+
     is_dicom = []
     image_folders = []
     for _, image in images.iterrows():
+
         image_path, dicom = _find_path_single_image(image, source_dir)
         is_dicom.append(dicom)
         image_folders.append(image_path)
@@ -45,7 +48,7 @@ def find_image_path(
 
 
 def _find_path_single_image(image: pd.Series, source_dir: Path) -> tuple[str, bool]:
-    path_to_sequence = source_dir / str(image["Subject_ID"])
+    path_to_sequence = source_dir / str(image.Subject_ID)
     image_folder_path = ""
     is_dicom = True
     if (

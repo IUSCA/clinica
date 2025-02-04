@@ -150,13 +150,13 @@ class AdniToBids(Converter):
             encoding="utf-8",
         )
         # -- Creation of sessions.tsv --
-        cprint("Creating sessions files...", lvl="info")
-        create_adni_sessions_dict(
-            bids_ids,
-            clinical_specifications_folder,
-            clinical_data_dir,
-            bids_subjects_paths,
-        )
+        # cprint("Creating sessions files...", lvl="info")
+        # create_adni_sessions_dict(
+        #     bids_ids,
+        #     clinical_specifications_folder,
+        #     clinical_data_dir,
+        #     bids_subjects_paths,
+        # )
         # -- Creation of scans files --
         if conversion_path.exists():
             cprint("Creating scans files...", lvl="info")

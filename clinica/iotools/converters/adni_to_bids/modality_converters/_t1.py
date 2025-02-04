@@ -680,7 +680,7 @@ def _check_qc(
         cprint(
             msg=(
                 f"Subject {subject_id} for visit {visit_str} "
-                f"- Series: {str(scan.SeriesID)} - Study: {str(scan.StudyID)}"
+                f"- Series: {str(scan.SeriesID)} - Study: {str(scan.StudyID)} - image ID {str(scan.ImageUID)}"
             ),
             lvl="info",
         )

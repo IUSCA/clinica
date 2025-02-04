@@ -789,12 +789,12 @@ def _create_file(
     if not image.Path:
         # todo : check for message redundancy
         cprint(
-            f"{logging_header} No path specified for {subject} in session {viscode}",
+            f"{logging_header} No path specified for {subject} in session {viscode} with image ID {image.Image_ID}",
             lvl="info",
         )
         return None
     cprint(
-        f"{logging_header} Processing subject {subject} in session {viscode}",
+        f"{logging_header} Processing subject {subject} in session {viscode} with image ID {image.Image_ID}",
         lvl="info",
     )
     session = viscode_to_session(viscode)
