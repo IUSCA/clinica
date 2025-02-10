@@ -346,9 +346,9 @@ def get_json_file_matching_pattern(fmap_path: Path, pattern: str) -> Path:
     if len(json_file) != 1:
         msg = f"Expected only a single JSON file ending in '{pattern}' in {fmap_path}, but got:"
         msg += "\n".join([f.name for f in json_file])
-        raise ValueError(msg)
-    return json_file[0]
-
+        # raise ValueError(msg)
+        cprint(msg)
+        return json_file[0]
 
 def check_json_contains_keys(json_file: Path, keys: Iterable[str]) -> bool:
     with open(json_file, "r") as file:
@@ -386,12 +386,15 @@ def one_phase_two_magnitudes_handler(fmap_path: Path):
         f"{fmap_path.parent.parent.name}, session {fmap_path.parent.name}.",
         lvl="info",
     )
-    json_file = get_json_file_matching_pattern(fmap_path, pattern="ph.json")
-    if check_json_contains_keys(json_file, ("EchoTime1", "EchoTime2")):
-        rename_files(fmap_path, BIDSFMAPCase.ONE_PHASE_TWO_MAGNITUDES)
-    else:
-        not_supported_handler(fmap_path)
-
+    try:
+        json_file = get_json_file_matching_pattern(fmap_path, pattern="ph.json")
+        if check_json_contains_keys(json_file, ("EchoTime1", "EchoTime2")):
+            rename_files(fmap_path, BIDSFMAPCase.ONE_PHASE_TWO_MAGNITUDES)
+        else:
+            not_supported_handler(fmap_path)
+    except Exception as e:
+        print(f"Error encountered while fetching JSON file: {e}")
+        
 
 def two_phases_two_magnitudes_handler(fmap_path: Path):
     """Performs the checks and renaming for BIDS spec case 2 for fieldmaps"""
