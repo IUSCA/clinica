@@ -625,7 +625,7 @@ def paths_to_bids(
     modality: ADNIModalityConverter,
     mod_to_update: bool = False,
     n_procs: Optional[int] = 1,
-) -> List[Path]:
+) -> List[Optional[Path]]:
     """Images in the list are converted and copied to directory in BIDS format.
 
     Parameters
@@ -636,8 +636,8 @@ def paths_to_bids(
     bids_dir : Path
         The path to the output BIDS directory.
 
-    modality : str
-        Imaging modality.
+    modality : ADNIModalityConverter
+        Imaging modality class.
 
     mod_to_update : bool
         If True, pre-existing images in the BIDS directory will be erased
@@ -650,12 +650,20 @@ def paths_to_bids(
     Returns
     -------
     output_file_treated : list of paths
-        List of path to image files created.
-        This list contains None values for files where the
+        List of paths to image files created.
+        This list contains `None` values for files where the
         conversion wasn't successful.
     """
     from functools import partial
     from multiprocessing import Pool
+
+    def safe_create_file(image):
+        try:
+            return create_file_(image)
+        except Exception as e:
+            # Log the specific error for this image and continue with None
+            print(f"Failed to process image {image}: {e}")
+            return None
 
     images_list = list([data for _, data in images.iterrows()])
     create_file_ = partial(
@@ -664,11 +672,18 @@ def paths_to_bids(
         bids_dir=bids_dir,
         mod_to_update=mod_to_update,
     )
-    # If n_procs==1 do not rely on a Process Pool to enable classical debugging
+    
     if n_procs == 1:
-        return [create_file_(image) for image in images_list]
-    with Pool(processes=n_procs) as pool:
-        output_file_treated = pool.map(create_file_, images_list)
+        return [safe_create_file(image) for image in images_list]
+
+    output_file_treated = []
+    
+    try:
+        with Pool(processes=n_procs) as pool:
+            output_file_treated = pool.map(safe_create_file, images_list)
+    except Exception as e:
+        print(f"An error occurred during multiprocessing: {e}")
+    
     return output_file_treated
 
 
