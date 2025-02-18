@@ -673,6 +673,7 @@ def paths_to_bids(
         mod_to_update=mod_to_update,
     )
     
+    n_procs = 1
     if n_procs == 1:
         return [safe_create_file(image) for image in images_list]
 
